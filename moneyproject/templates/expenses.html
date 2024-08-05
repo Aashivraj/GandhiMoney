@@ -1,0 +1,105 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<body class="g-sidenav-show bg-gray-200">
+    {% include "includes/sidebar.html" %}
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        <!-- Navbar -->
+        {% include "includes/navbar.html" %}
+        <!-- End Navbar -->
+
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="row">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer py-4">
+            <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            © <script>
+                                document.write(new Date().getFullYear())
+                            </script>, made with <i class="fa fa-heart"></i> by
+                            <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a> for a better web.
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Include Bootstrap Datepicker CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('[type="text"][placeholder="Select date"]').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function animateCounter(elementId) {
+                const counter = document.getElementById(elementId);
+                const countTo = parseInt(counter.getAttribute('countTo'), 10);
+                const duration = 2000; // duration of the animation in milliseconds
+                const increment = countTo / (duration / 10);
+
+                let currentCount = 0;
+                const interval = setInterval(() => {
+                    currentCount += increment;
+                    if (currentCount >= countTo) {
+                        currentCount = countTo;
+                        clearInterval(interval);
+                    }
+                    counter.textContent = Math.floor(currentCount);
+                }, 10);
+            }
+
+            animateCounter('state1');
+            animateCounter('state2');
+            animateCounter('card1');
+            animateCounter('card2');
+            animateCounter('card3');
+            animateCounter('card4');
+        });
+    </script>
+</body>
+{% endblock content %}
