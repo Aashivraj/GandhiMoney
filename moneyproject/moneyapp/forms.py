@@ -39,9 +39,21 @@ class PaymentTypeForm(forms.ModelForm):
     class Meta:
         model = PaymentType
         fields = ('name',)
+        labels = {
+            'name': 'Payment type',  # Replace 'Custom Name' with your desired field name
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Enter Payment Type'}),
+        }
 
 # Category form
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ('name',)
+        labels = {
+            'name': 'Category',  # Replace 'Custom Name' with your desired field name
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Enter category here'}),
+        }

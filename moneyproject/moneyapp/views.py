@@ -6,6 +6,7 @@ from .models import *
 from .forms import *
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+from django.views.generic.list import ListView
 
 # Registration view
 class RegisterView(views.View):
@@ -98,12 +99,22 @@ class TableView(views.View):
         }
         return render(request, 'datalist/tables.html', context)
 
+
+    
 class PaymentTypeView(views.View):
     form_class = PaymentTypeForm
 
+    
     def get(self, request):
         form = self.form_class()
-        return render(request, 'payment.html', {'form': form})
+        payments = PaymentType.objects.all()
+    
+        context = {
+            'payments': payments,
+            'form': form,
+        }
+        
+        return render(request, 'payment.html', context)
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -196,3 +207,10 @@ class DeleteExpenseView(views.View):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         expense.delete()
         return redirect('table')
+
+class DeletePaymentView(views.View):
+    def post(self, request, pk):
+        payment_type = get_object_or_404(PaymentType, pk=pk, user=request.user)
+        payment_type.delete()
+        return redirect('payment')
+    
