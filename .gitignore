@@ -177,7 +177,7 @@ cython_debug/
 
 */migrations/0001_initial.py
 *.pyc
-settings.py
+
 .env
 
 
