@@ -6,6 +6,7 @@ from .models import *
 from .forms import *
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+from dateutil.relativedelta import relativedelta
 from django.views.generic.list import ListView
 
 # Registration view
@@ -87,6 +88,13 @@ class TableView(views.View):
             total_balances_mode = sum(balance.money for balance in all_balances if balance.account.name == mode)
 
             totals_by_mode[mode] = total_balances_mode + (total_credits_mode - total_expenses_mode)
+            
+            
+        # Calculate total expenses and credits for the current month
+        start_of_month = current_date.replace(day=1)
+        end_of_month = start_of_month + relativedelta(months=1, days=-1)
+        month_expenses = Expense.objects.filter(user=request.user, date_created__date__range=[start_of_month, end_of_month])
+        total_expenses_month = sum(expense.money for expense in month_expenses)
 
         # Context for date-filtered transactions
         context = {
@@ -96,6 +104,7 @@ class TableView(views.View):
             'total_balance_date': total_balance_date,
             'total_balance_overall': total_balance_overall,
             'totals_by_mode': totals_by_mode,
+            'total_expenses_month': total_expenses_month,
         }
         return render(request, 'datalist/dashboard.html', context)
 
