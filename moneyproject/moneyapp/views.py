@@ -40,7 +40,7 @@ class LoginView(views.View):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 auth_login(request, user)
-                return redirect('table')
+                return redirect('dashboard')
             else:
                 messages.error(request, 'Invalid credentials')
         return render(request, 'authentication/login.html', {'form': form})
@@ -79,12 +79,12 @@ class TableView(views.View):
         total_balance_overall = total_balance_overall + (total_credits_overall - total_expenses_overall)
 
         # Calculate totals per payment mode (overall)
-        payment_modes = set(credit.payment_mode.name for credit in all_credits) | set(expense.payment_mode.name for expense in all_expenses) | set(balance.payment_mode.name for balance in all_balances)
+        payment_modes = set(credit.account.name for credit in all_credits) | set(expense.account.name for expense in all_expenses) | set(balance.account.name for balance in all_balances)
         totals_by_mode = {}
         for mode in payment_modes:
-            total_credits_mode = sum(credit.money for credit in all_credits if credit.payment_mode.name == mode)
-            total_expenses_mode = sum(expense.money for expense in all_expenses if expense.payment_mode.name == mode)
-            total_balances_mode = sum(balance.money for balance in all_balances if balance.payment_mode.name == mode)
+            total_credits_mode = sum(credit.money for credit in all_credits if credit.account.name == mode)
+            total_expenses_mode = sum(expense.money for expense in all_expenses if expense.account.name == mode)
+            total_balances_mode = sum(balance.money for balance in all_balances if balance.account.name == mode)
 
             totals_by_mode[mode] = total_balances_mode + (total_credits_mode - total_expenses_mode)
 
@@ -97,7 +97,7 @@ class TableView(views.View):
             'total_balance_overall': total_balance_overall,
             'totals_by_mode': totals_by_mode,
         }
-        return render(request, 'datalist/tables.html', context)
+        return render(request, 'datalist/dashboard.html', context)
 
 
     
@@ -122,7 +122,7 @@ class PaymentTypeView(views.View):
             payment_type = form.save(commit=False)
             payment_type.user = request.user
             payment_type.save()
-            return redirect('payment')
+            return redirect('accounts')
         else:
             # Add debug statement to check form errors
             print(form.errors)
@@ -206,11 +206,11 @@ class DeleteExpenseView(views.View):
     def post(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         expense.delete()
-        return redirect('table')
+        return redirect('dashboard')
 
 class DeletePaymentView(views.View):
     def post(self, request, pk):
-        payment_type = get_object_or_404(PaymentType, pk=pk, user=request.user)
-        payment_type.delete()
-        return redirect('payment')
+        account = get_object_or_404(PaymentType, pk=pk, user=request.user)
+        account.delete()
+        return redirect('accounts')
     

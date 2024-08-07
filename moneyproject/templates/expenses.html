@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-
 <body class="g-sidenav-show bg-gray-200">
     {% include "includes/sidebar.html" %}
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
@@ -24,20 +23,20 @@
             </div>
         </div>
 
-        <footer class="footer py-4  ">
+        <footer class="footer py-4">
             <div class="container-fluid">
-              <div class="row align-items-center justify-content-lg-between">
-                <div class="col-lg-6 mb-lg-0 mb-4">
-                  <div class="copyright text-center text-sm text-muted text-lg-start">
-                    <script>
-                      document.write(new Date().getFullYear())
-                    </script>,
-                    Ashivraj
-                  </div>
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script>,
+                            Ashivraj
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </footer>
+        </footer>
     </main>
 
     <!-- Include jQuery and Bootstrap JS -->
@@ -50,39 +49,12 @@
 
     <script>
         $(document).ready(function(){
-            $('[type="text"][placeholder="Select date"]').datepicker({
+            // Initialize the datepicker for inputs with class 'datepicker'
+            $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 todayHighlight: true
             });
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function animateCounter(elementId) {
-                const counter = document.getElementById(elementId);
-                const countTo = parseInt(counter.getAttribute('countTo'), 10);
-                const duration = 2000; // duration of the animation in milliseconds
-                const increment = countTo / (duration / 10);
-
-                let currentCount = 0;
-                const interval = setInterval(() => {
-                    currentCount += increment;
-                    if (currentCount >= countTo) {
-                        currentCount = countTo;
-                        clearInterval(interval);
-                    }
-                    counter.textContent = Math.floor(currentCount);
-                }, 10);
-            }
-
-            animateCounter('state1');
-            animateCounter('state2');
-            animateCounter('card1');
-            animateCounter('card2');
-            animateCounter('card3');
-            animateCounter('card4');
         });
     </script>
 </body>

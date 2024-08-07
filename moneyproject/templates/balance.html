@@ -42,35 +42,5 @@
       </footer>
     </div>
   </main>
-  
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function animateCounter(elementId) {
-            const counter = document.getElementById(elementId);
-            const countTo = parseInt(counter.getAttribute('countTo'), 10);
-            const duration = 2000; // duration of the animation in milliseconds
-            const increment = countTo / (duration / 10);
-
-            let currentCount = 0;
-            const interval = setInterval(() => {
-                currentCount += increment;
-                if (currentCount >= countTo) {
-                    currentCount = countTo;
-                    clearInterval(interval);
-                }
-                counter.textContent = Math.floor(currentCount);
-            }, 10);
-        }
-
-        
-        animateCounter('state1');
-        animateCounter('state2');
-        animateCounter('card1'); 
-        animateCounter('card2'); 
-        animateCounter('card3');
-        animateCounter('card4');
-    });
-</script>
 
 {% endblock content %}
