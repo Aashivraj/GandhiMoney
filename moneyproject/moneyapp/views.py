@@ -21,7 +21,7 @@ class RegisterView(views.View):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
-            return redirect('table')
+            return redirect('dashboard')
         return render(request, 'authentication/register.html', {'form': form})
 
 # Login view
@@ -30,7 +30,7 @@ class LoginView(views.View):
 
     def get(self, request):
         form = self.form_class()
-        return render(request, 'authentication/login.html', {'form': form})
+        return render(request, 'authentication/login1.html', {'form': form})
 
     def post(self, request):
         form = self.form_class(data=request.POST)
@@ -43,7 +43,7 @@ class LoginView(views.View):
                 return redirect('dashboard')
             else:
                 messages.error(request, 'Invalid credentials')
-        return render(request, 'authentication/login.html', {'form': form})
+        return render(request, 'authentication/login1.html', {'form': form})
 
 # Logout view
 class LogoutView(views.View):

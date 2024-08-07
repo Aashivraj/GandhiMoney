@@ -30,28 +30,28 @@
               <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center" style="background-image: url('../assets/img/illustrations/illustration-signup.jpg'); background-size: cover;">
               </div>
             </div>
-            <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column ms-auto me-auto ms-lg-auto me-lg-5">
-              <div class="card card-plain">
-                <div class="card-header">
-                  <h4 class="font-weight-bolder">Sign Up</h4>
-                  <p class="mb-0">Enter your email and password to register</p>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                 
-                </div>
-                <div class="card-footer text-center pt-0 px-lg-2 px-1">
-                  <p class="mb-2 text-sm mx-auto">
-                    Already have an account?
-                    <a href="../pages/sign-in.html" class="text-primary text-gradient font-weight-bold">Sign in</a>
-                  </p>
-                </div>
-              </div>
-            </div>
+                    <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column ms-auto me-auto ms-lg-auto me-lg-5">
+                      <div class="card card-plain">
+                        <div class="card-header">
+                          <h4 class="font-weight-bolder">Sign Up</h4>
+                          <p class="mb-0">Enter your email and password to register</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        
+                        </div>
+                        <div class="card-footer text-center pt-0 px-lg-2 px-1">
+                          <p class="mb-2 text-sm mx-auto">
+                            Already have an account?
+                            <a href="../pages/sign-in.html" class="text-primary text-gradient font-weight-bold">Sign in</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
           </div>
         </div>
       </div>
