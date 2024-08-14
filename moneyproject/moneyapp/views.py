@@ -61,52 +61,38 @@ class TableView(views.View):
         # Date-filtered transactions for the logged-in user
         expenses = Expense.objects.filter(user=request.user, date_created__date=selected_date)
         credits = Credit.objects.filter(user=request.user, date_created__date=selected_date)
-        balances = Balance.objects.filter(user=request.user, date_created__date=selected_date)
         
-        # Total credits and expenses based on selected date
+        # Get overall balance for the user
+        total_balance_overall = Balance.objects.filter(user=request.user).aggregate(total=models.Sum('money'))['total'] or 0
+        
+        # Calculate the total credits and expenses for the selected date
         total_credits_date = sum(credit.money for credit in credits)
         total_expenses_date = sum(expense.money for expense in expenses)
-        total_balance = sum(balance.money for balance in balances)
-        total_balance_date = total_balance + (total_credits_date - total_expenses_date)
-
-        # Overall balance calculation (for all dates)
-        all_expenses = Expense.objects.filter(user=request.user)
-        all_credits = Credit.objects.filter(user=request.user)
-        all_balances = Balance.objects.filter(user=request.user)
         
-        total_credits_overall = sum(credit.money for credit in all_credits)
-        total_expenses_overall = sum(expense.money for expense in all_expenses)
-        total_balance_overall = sum(balance.money for balance in all_balances)
-        total_balance_overall = total_balance_overall + (total_credits_overall - total_expenses_overall)
-
-        # Calculate totals per payment mode (overall)
-        payment_modes = set(credit.account.name for credit in all_credits) | set(expense.account.name for expense in all_expenses) | set(balance.account.name for balance in all_balances)
-        totals_by_mode = {}
-        for mode in payment_modes:
-            total_credits_mode = sum(credit.money for credit in all_credits if credit.account.name == mode)
-            total_expenses_mode = sum(expense.money for expense in all_expenses if expense.account.name == mode)
-            total_balances_mode = sum(balance.money for balance in all_balances if balance.account.name == mode)
-
-            totals_by_mode[mode] = total_balances_mode + (total_credits_mode - total_expenses_mode)
-            
-            
-        # Calculate total expenses and credits for the current month
+        # Calculate the total balance for the selected date
+        total_balance_date = total_balance_overall + (total_credits_date - total_expenses_date)
+        
+        # Fetch balances by payment mode directly
+        balances_by_mode = Balance.objects.filter(user=request.user).values('account__name').annotate(total=models.Sum('money'))
+        balances_dict = {balance['account__name']: balance['total'] for balance in balances_by_mode}
+        
+        # Calculate total expenses for the current month
         start_of_month = current_date.replace(day=1)
         end_of_month = start_of_month + relativedelta(months=1, days=-1)
         month_expenses = Expense.objects.filter(user=request.user, date_created__date__range=[start_of_month, end_of_month])
         total_expenses_month = sum(expense.money for expense in month_expenses)
 
-        # Context for date-filtered transactions
         context = {
             'expenses': expenses,
             'credits': credits,
             'selected_date': selected_date,
             'total_balance_date': total_balance_date,
             'total_balance_overall': total_balance_overall,
-            'totals_by_mode': totals_by_mode,
+            'balances_dict': balances_dict,
             'total_expenses_month': total_expenses_month,
         }
         return render(request, 'datalist/dashboard.html', context)
+
 
 
     
@@ -121,7 +107,7 @@ class PaymentTypeView(views.View):
         context = {
             'payments': payments,
             'form': form,
-        }
+              }
         
         return render(request, 'payment.html', context)
 
@@ -142,17 +128,30 @@ class BalanceCreateView(views.View):
     
     def get(self, request):
         form = self.form_class()
-        return render(request,'balance.html', {'form':form})
+        return render(request, 'balance.html', {'form': form})
     
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            balance = form.save(commit=False)
-            balance.user = request.user
-            balance.save()
+            account = form.cleaned_data['account']
+            money = form.cleaned_data['money']
+            
+            # Check if a Balance entry already exists for this user and account
+            balance, created = Balance.objects.get_or_create(
+                user=request.user,
+                account=account,
+                defaults={'money': money}  # Use this value if the record is created
+            )
+            
+            if not created:
+                # If the Balance entry already exists, update the money field
+                balance.money = money
+                balance.save()
+
             return redirect('balance')
         else:
-            return render(request,'balance.html', {"form": form})
+            return render(request, 'balance.html', {"form": form})
+
 
 class ExpenseCreateView(views.View):
     form_class = ExpenseForm
@@ -167,7 +166,7 @@ class ExpenseCreateView(views.View):
             expense = form.save(commit=False)
             expense.user = request.user
             expense.save()
-            return redirect('expense')
+            return redirect('dashboard')
         else:
             return render(request,'expenses.html', {"form": form})
 
@@ -184,7 +183,7 @@ class CreditCreateView(views.View):
             credit = form.save(commit=False)
             credit.user = request.user
             credit.save()
-            return redirect('credit')
+            return redirect('dashboard')
         else:
             return render(request,'credit.html', {"form": form})
 
@@ -209,7 +208,7 @@ class DeleteCreditView(views.View):
     def post(self, request, pk):
         credit = get_object_or_404(Credit, pk=pk, user=request.user)
         credit.delete()
-        return redirect('table')
+        return redirect('dashboard')
 
 class DeleteExpenseView(views.View):
     def post(self, request, pk):

@@ -115,9 +115,9 @@
                         </div>
                     </div>
 
-                    <!-- Payment Method Cards -->
+                    <!-- Balance Cards -->
                     <div class="row">
-                        {% for mode, total in totals_by_mode.items %}
+                        {% for mode, total in balances_dict.items %}
                         <div class="col-md-6 col-12 mb-4">
                             <div class="card">
                                 <div class="card-header mx-4 p-3 text-center">
@@ -140,6 +140,7 @@
                         </div>
                         {% endfor %}
                     </div>
+                    
                 </div>
             </div>
         </div>
