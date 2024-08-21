@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from django.views.generic.list import ListView
 
+
 # Registration view
 class RegisterView(views.View):
     form_class = SignUpForm
@@ -222,3 +223,106 @@ class DeletePaymentView(views.View):
         account.delete()
         return redirect('accounts')
     
+    
+    
+    
+    
+    
+    
+    
+    
+################################################## visualizations ################################################## 
+
+import matplotlib.pyplot as plt
+from io import BytesIO
+from django.http import HttpResponse
+from django.views import View
+from .models import *
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+
+
+
+class SpendingsView(views.View):
+    def get(self, request):
+        return render(request,'spendings.html')
+class ExpenseBreakdownPieChartView(views.View):
+    def get(self, request, *args, **kwargs):
+        expenses = Expense.objects.values('category__name').annotate(total=Sum('money'))
+        categories = [expense['category__name'] for expense in expenses]
+        totals = [expense['total'] for expense in expenses]
+        
+        fig, ax = plt.subplots()
+        ax.pie(totals, labels=categories, autopct='%1.1f%%')
+        ax.set_title('Expense Breakdown')
+        
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        
+        return HttpResponse(buffer, content_type='image/png')
+    
+    
+class MonthlySpendingTrendsLineGraphView(views.View):
+    def get(self, request, *args, **kwargs):
+        # Fetch monthly expense data
+        monthly_expenses = Expense.objects.annotate(month=TruncMonth('date_created')).values('month').annotate(total=Sum('money')).order_by('month')
+        months = [expense['month'].strftime('%Y-%m') for expense in monthly_expenses]
+        totals = [expense['total'] for expense in monthly_expenses]
+
+        # Create a line graph
+        fig, ax = plt.subplots()
+        ax.plot(months, totals, marker='o')
+        ax.set_title('Monthly Spending Trends')
+        ax.set_xlabel('Month')
+        ax.set_ylabel('Total Spending')
+
+        # Rotate date labels for better readability
+        # plt.xticks(rotation=45)
+
+        # Save to a BytesIO object and return it as an HttpResponse
+        buf = BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        return HttpResponse(buf, content_type='image/png')
+    
+class BudgetVsActualBarChartView(views.View):
+    def get(self, request, *args, **kwargs):
+        # Define a static budget for each month
+        monthly_budget = 9000  # Example budget for every month
+
+        # Aggregate expenses by month
+        expenses_by_month = (
+            Expense.objects.annotate(month=TruncMonth('date_created'))
+            .values('month')
+            .annotate(total_expenses=Sum('money'))
+            .order_by('month')
+        )
+
+        # Prepare data for the bar chart
+        labels = [entry['month'].strftime('%B %Y') for entry in expenses_by_month]
+        budget_values = [monthly_budget for _ in expenses_by_month]
+        actual_values = [entry['total_expenses'] for entry in expenses_by_month]
+
+        # Create a bar chart
+        fig, ax = plt.subplots()
+        bar_width = 0.35
+        index = range(len(labels))
+
+        bar1 = ax.bar(index, budget_values, bar_width, label='Budget', color='b')
+        bar2 = ax.bar([i + bar_width for i in index], actual_values, bar_width, label='Actual', color='r')
+
+        ax.set_xlabel('Month')
+        ax.set_ylabel('Amount')
+        ax.set_title('Budget vs Actual Spending by Month')
+        ax.set_xticks([i + bar_width / 2 for i in index])
+        ax.set_xticklabels(labels, ha="right")
+        ax.legend()
+
+        # Save to a BytesIO object and return it as an HttpResponse
+        buf = BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        return HttpResponse(buf, content_type='image/png')
+
+

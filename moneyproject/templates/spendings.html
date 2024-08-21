@@ -1,0 +1,63 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<body class="g-sidenav-show bg-gray-200">
+    {% include "includes/sidebar.html" %}
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        <!-- Navbar -->
+        {% include "includes/navbar.html" %}
+        <!-- End Navbar -->
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    
+
+                    <!-- Add your visualizations here -->
+                    <div class="card mb-12">
+                        <div class="card-body">
+                            <h4 class="text-center">Visualizations</h4>
+                            <!-- Expense Breakdown Pie Chart -->
+                            <h5 class="text-left">Expense Breakdown</h5>
+                            <img src="{% url 'expense_breakdown_pie_chart' %}" alt="Expense Breakdown Pie Chart" class="img-fluid">
+                            
+                            <!-- Monthly Spending Trends Line Graph -->
+                            <h5 class="text-left">Monthly Spending Trends</h5>
+                            <img src="{% url 'monthly_spending_trends_line_graph' %}" alt="Monthly Spending Trends Line Graph" class="img-fluid">
+                            
+                            <!-- Budget vs Actual Spending Bar Chart -->
+                            <h5 class="text-left">Budget vs Actual Spending</h5>
+                            <img src="{% url 'budget_vs_actual_bar_chart' %}" alt="Budget vs Actual Spending Bar Chart" class="img-fluid">
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer py-4  ">
+            <div class="container-fluid">
+              <div class="row align-items-center justify-content-lg-between">
+                <div class="col-lg-6 mb-lg-0 mb-4">
+                  <div class="copyright text-center text-sm text-muted text-lg-start">
+                    <script>
+                      document.write(new Date().getFullYear())
+                    </script>,
+                    Ashivraj
+                  </div>
+                </div>
+              </div>
+            </div>
+          </footer>
+    </main>
+
+    <script>
+        document.getElementById('date-picker').addEventListener('change', function() {
+            document.cookie = "selected_date=" + this.value + "; path=/";
+            window.location.reload();
+        });
+    </script>
+</body>
+{% endblock %}
