@@ -18,6 +18,16 @@
                     <div class="card mb-12">
                         <div class="card-body">
                             <h4 class="text-center">Visualizations</h4>
+
+
+                            <!-- Date Filters -->
+                            <form method="get" class="text-center mb-4">
+                              <label for="start_date">Start Date:</label>
+                              <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}" required>
+                              <label for="end_date">End Date:</label>
+                              <input type="date" id="end_date" name="end_date" value="{{ request.GET.end_date }}" required>
+                              <button type="submit" class="btn btn-primary">Filter</button>
+                            </form>
                             <!-- Expense Breakdown Pie Chart -->
                             <h5 class="text-left">Expense Breakdown</h5>
                             <img src="{% url 'expense_breakdown_pie_chart' %}" alt="Expense Breakdown Pie Chart" class="img-fluid">
